@@ -1,0 +1,524 @@
+scalar DateTime
+
+type Query {
+	# User
+	User: [User!]!
+	loggedInUser: User!
+	UserInfo(id: String!): User!
+	# Admin
+	Admin: [Admin!]!
+	loggedInAdmin: Admin!
+	# Customer
+	Customer: [Customer!]!
+	CustomerInfo(id: String!): Customer!
+	# Vendor
+	Vendor: [Vendor!]!
+	VendorInfo(id: String!): Vendor!
+	# Product
+	Products: [Products!]!
+	ProductInfo(id: String!): Products!
+	# Purchase
+	Purchase: [Purchase!]!
+	PurchaseInfo(id: String!): Purchase!
+	PurchaseOfProduct: [PurchaseOfProduct!]!
+	PurchaseOfProductInfo(id: String!): PurchaseOfProduct!
+	# Sale
+	Sale: [Sale!]!
+	SaleInfo(id: String!): Sale!
+	SaleOfProduct: [SaleOfProduct!]!
+	SaleOfProductInfo(id: String!): SaleOfProduct!
+	# Payments
+	Payment: [Payment!]!
+	PaymentInfo(id: String!): Payment!
+	# Dashboard
+	Calculation(startDate: String!, endDate: String): Calculation!
+	# Expense
+	Expense: [Expense!]!
+	ExpenseInfo(id: String!): Expense!
+	# Accounts
+	Accounts(startDate: String!, endDate: String): [Accounts!]!
+	AccountInfo(id: String!): Accounts!
+}
+
+type Mutation {
+	# Super Admin
+	signUpSuperAdmin(name: String!, email: String!, password: String!): AuthPayloadSuperAdmin!
+	loginSuperAdmin(email: String!, password: String!): AuthPayloadSuperAdmin!
+
+	# Admin
+	createAdmin(
+		name: String!
+		email: String!
+		password: String!
+		numberOfUser: Int!
+		profilePicture: Upload
+	): AuthPayloadAdmin!
+	loginAdmin(email: String!, password: String!): AuthPayloadAdmin!
+	updateAdmin(
+		name: String
+		numberOfUser: Int
+		profilePicture: Upload
+	): Status!
+	deleteAdmin(id: String!): Status!
+	changePasswordAdmin(oldPassword: String!, newPassword: String!): Status!
+	
+	# User
+	createUser(
+		name: String!
+		email: String!
+		password: String!
+		Role: String
+		profilePicture: Upload
+	): Status!
+	loginUser(adminEmail: String!,email: String!, password: String!): AuthPayloadUser!
+	updateUser(
+		id: String!
+		name: String
+		email: String
+		password: String
+		Role: String
+		profilePicture: Upload
+	): Status!
+	deleteUser(id: String!): Status!
+	changePasswordUser(oldPassword: String!, newPassword: String!): Status!
+
+	# Customer
+	CreateCustomer(name: String!, phoneNumber: String!, initialBalance: Int): Status!
+	UpdateCustomer(id: ID!, name: String, phoneNumber: String, initialBalance: Int): Status!
+	DeleteCustomer(id: ID!): Status!
+
+	# Vendor
+	CreateVendor(
+		name: String!
+		contactPerson: String!
+		phoneNumber: String!
+		initialBalance: Int
+	): Status!
+	UpdateVendor(
+		id: ID!
+		name: String
+		contactPerson: String
+		phoneNumber: String
+		initialBalance: Int
+	): Status!
+	DeleteVendor(id: ID!): Status!
+
+	# Product
+	CreateProduct(
+		name: String!
+		price: Int!
+		Description: String
+		DescriptionTwo: String
+		serialNo: String!
+		Category: String
+		initialQuantity: Int
+		image: [Upload]
+	): Status!
+	UpdateProduct(
+		id: ID!
+		name: String
+		price: Int
+		serialNo: String
+		Description: String
+		DescriptionTwo: String
+		Category: String
+		initialQuantity: Int
+		image: [Upload]
+	): Status!
+	DeleteProduct(id: ID!): Status!
+
+	# Purchase
+	CreatePurchase(
+		discount: Int
+		Product: [ProductArray]
+		vendorId: String
+		AmountPayed: Int
+		PaymentType: String
+		BillNo: String
+	): Status!
+	UpdatePurchase(
+		id: ID!
+		discount: Int
+		Product: [ProductArray]
+		vendorId: String
+		AmountPayed: Int
+		PaymentType: String
+		BillNo: String
+	): Status!
+	DeletePurchase(id: ID!): Status!
+	ReturnPurchase(
+		id: ID!
+		discount: Int
+		Product: [ProductArray]
+		vendorId: String
+		AmountPayed: Int
+		PaymentType: String
+		BillNo: String
+	): Status!
+
+	# Sale
+	CreateSale(
+		discount: Int
+		Product: [ProductArray]
+		customerId: String
+		AmountPayed: Int
+		PaymentType: String
+	): Status!
+	UpdateSale(
+		id: ID!
+		discount: Int
+		Product: [ProductArray]
+		customerId: String
+		AmountPayed: Int
+		PaymentType: String
+	): Status!
+	DeleteSale(id: ID!): Status!
+	ReturnSale(
+		id: ID!
+		discount: Int
+		Product: [ProductArray]
+		customerId: String
+		AmountPayed: Int
+		PaymentType: String
+	): Status!
+
+	# Payment
+	ReceivePayment(customerId: String, BillNo: String!, Amount: Int!, type: String!): Status!
+	SendPayment(vendorId: String, BillNo: String!, Amount: Int!, type: String!): Status!
+	UpdatePayment(id: String, BillNo: String!, Amount: Int!, type: String!): Status!
+	DeletePayment(id: String): Status!
+
+	# Expense
+	CreateExpense(Amount: Int!, Description: String!, Category: String!): Status!
+	UpdateExpense(id: String, Amount: Int!, Description: String!, Category: String!): Status!
+	DeleteExpense(id: String): Status!
+
+	# Accounts
+	CreateAccount(OpeningBalance: Int, ClosingBalance: Int, userId: String, Date: DateTime!): Status!
+	UpdateAccount(id: String, OpeningBalance: Int, ClosingBalance: Int): Status!
+	DeleteAccount(id: String): Status!
+}
+
+type AuthPayloadUser {
+	token: String
+	user: User
+}
+
+type AuthPayloadAdmin {
+	token: String
+	admin: Admin
+}
+
+type AuthPayloadSuperAdmin {
+	token: String
+	SuperAdmin: SuperAdmin
+}
+
+type Status {
+	success: Boolean
+	message: String
+	debugMessage: String
+}
+
+input ProductArray {
+	ProductId: String!
+	ProductQuantity: Int!
+	Price: Int
+}
+
+type Calculation {
+	Purchase: [Purchase]
+	Sale: [Sale]
+	OpeningBalance: Int
+	ClosingBalance: Int
+	TotalSale: Int
+	CashSale: Int
+	TotalPurchase: Int
+	CashPurchase: Int
+	DiscountGiven: Int
+	DiscountReceived: Int
+	ProductsSold: Int
+	ProductsPurchased: Int
+	Profit: Int
+	PaymentReceived: Int
+	PaymentDone: Int
+	CustomerBalance: Int
+	VendorBalance: Int
+	Expense: Int
+	TotalBalance: Int
+}
+
+type SuperAdmin {
+	id: String
+	name: String
+	email: String
+	password: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Admin {
+	id: String
+	name: String
+	email: String
+	username: String
+	password: String
+	numberOfUser: Int
+	Sale: [Sale]
+	Purchase: [Purchase]
+	SaleOfProduct: [SaleOfProduct]
+	PurchaseOfProduct: [PurchaseOfProduct]
+	Customers: [Customer]
+	Vendor: [Vendor]
+	User: [User]
+	profilePicture: Attachment
+	attachmentFilename: String
+	Expense: [Expense]
+	Payment: [Payment]
+	Products: [Products]
+	ReturnPurchase: [ReturnPurchase]
+	SaleReturn: [SaleReturn]
+	Accounts: [Accounts]
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+# 3
+type User {
+	id: String
+	name: String
+	Role: String
+	email: String
+	password: String
+	ProductsSaled: [SaleOfProduct]
+	ProductsPurchased: [PurchaseOfProduct]
+	profilePicture: Attachment
+	attachmentFilename: String
+	Admin: Admin
+	adminId: String
+	Expense: [Expense]
+	ReturnPurchase: [ReturnPurchase]
+	SaleReturn: [SaleReturn]
+	Payment: [Payment]
+	Accounts: [Accounts]
+	Sale: [Sale]
+	Purchase: [Purchase]
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Customer {
+	id: String
+	name: String
+	phoneNumber: String
+	balance: Int
+	initialBalance: Int
+	Sale: [Sale]
+	Admin: Admin
+	Payment: [Payment]
+	adminId: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Vendor {
+	id: String
+	name: String
+	contactPerson: String
+	phoneNumber: String
+	balance: Int
+	initialBalance: Int
+	Purchase: [Purchase]
+	Admin: Admin
+	adminId: String
+	Payment: [Payment]
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Products {
+	id: String
+	name: String
+	serialNo: String
+	Description: String
+	DescriptionTwo: String
+	Category: String
+	initialQuantity: Int
+	# Quantity Working
+	QuantityAvailable: Int
+	price: Int
+	image: [Attachment]
+	#
+	Sale: [SaleOfProduct]
+	#
+	Purchase: [PurchaseOfProduct]
+	ReturnPurchase: [ReturnPurchase]
+	SaleReturn: [SaleReturn]
+	#
+	Admin: Admin
+	adminId: String
+	#
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Sale {
+	id: String
+	total: Int
+	discount: Int
+	Product: [SaleOfProduct]
+	Customer: Customer
+	customerId: String
+	Payment: [Payment]
+	Admin: Admin
+	adminId: String
+	User: User
+	userId: String
+	SaleReturn: [SaleReturn]
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type SaleOfProduct {
+	id: String
+	Sale: Sale
+	SaleId: String
+	Products: Products
+	ProductId: String
+	# Order Product Quantity Working
+	TotalQuantity: Int
+	price: Int
+	User: User
+	userId: String
+	Admin: Admin
+	adminId: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type SaleReturn {
+	id: String
+	Sale: Sale
+	SaleId: String
+	Products: Products
+	ProductId: String
+	# Order Product Quantity Working
+	TotalQuantity: Int
+	price: Int
+	User: User
+	userId: String
+	Admin: Admin
+	adminId: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Purchase {
+	id: String
+	total: Int
+	discount: Int
+	BillNo: String
+	Product: [PurchaseOfProduct]
+	Vendor: Vendor
+	vendorId: String
+	Payment: [Payment]
+	Admin: Admin
+	adminId: String
+	User: User
+	userId: String
+	ReturnPurchase: [ReturnPurchase]
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type PurchaseOfProduct {
+	id: String
+	Purchase: Purchase
+	PurchaseId: String
+	Products: Products
+	ProductId: String
+	# Order Product Quantity Working
+	price: Int
+	Quantity: Int
+	User: User
+	userId: String
+	Admin: Admin
+	adminId: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type ReturnPurchase {
+	id: String
+	Purchase: Purchase
+	PurchaseId: String
+	Products: Products
+	ProductId: String
+	# Order Product Quantity Working
+	price: Int
+	Quantity: Int
+	User: User
+	userId: String
+	Admin: Admin
+	adminId: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Payment {
+	id: String
+	BillNo: String
+	Amount: Int
+	type: String
+	Sale: Sale
+	SaleId: String
+	Purchase: Purchase
+	PurchaseId: String
+	PaymentReceived: Customer
+	customerId: String
+	PaymentSent: Vendor
+	vendorId: String
+	Admin: Admin
+	adminId: String
+	User: User
+	userId: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Expense {
+	id: String
+	Amount: Int
+	Category: String!
+	Description: String
+	User: User
+	userId: String
+	Admin: Admin
+	adminId: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+type Attachment {
+	id: String
+	mimetype: String
+	filename: String
+	encoding: String
+	Products: Products
+	productsId: String
+	User: User
+	Admin: [Admin]
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type Accounts {
+	id: String
+	OpeningBalance: Int
+	ClosingBalance: Int
+	User: User
+	userId: String
+	Admin: Admin
+	adminId: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}

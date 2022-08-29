@@ -1,0 +1,327 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// 1
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// 2
+generator client {
+  provider = "prisma-client-js"
+}
+
+model SuperAdmin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
+  username           String              @unique()
+  name               String
+  email              String              @unique()
+  password           String
+  numberOfUser       Int                 @default(1)
+  Sale               Sale[]
+  Purchase           Purchase[]
+  SaleOfProduct      SaleOfProduct[]
+  PurchaseOfProduct  PurchaseOfProduct[]
+  Customers          Customer[]
+  Vendor             Vendor[]
+  User               User[]
+  profilePicture     Attachment[]
+  attachmentFilename String?
+  Expense            Expense[]
+  Payment            Payment[]
+  Products           Products[]
+  ReturnPurchase     ReturnPurchase[]
+  SaleReturn         SaleReturn[]
+  Accounts           Accounts[]
+  SerialNo           SerialNo[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+}
+
+// 3
+model User {
+  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  Role               UserType            @default(User)
+  email              String              @unique()
+  password           String
+  ProductsSaled      SaleOfProduct[]
+  ProductsPurchased  PurchaseOfProduct[]
+  profilePicture     Attachment?         @relation(fields: [attachmentFilename], references: [filename])
+  attachmentFilename String?             @unique
+  Admin              Admin               @relation(fields: [adminId], references: [id])
+  adminId            String
+  Expense            Expense[]
+  ReturnPurchase     ReturnPurchase[]
+  SaleReturn         SaleReturn[]
+  Payment            Payment[]
+  Accounts           Accounts[]
+  createdAt          DateTime            @default(now())
+  Sale               Sale[]
+  Purchase           Purchase[]
+  updatedAt          DateTime            @updatedAt
+}
+
+enum UserType {
+  Manager
+  User
+}
+
+model Customer {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  phoneNumber    String    @unique
+  balance        Int       @default(0)
+  initialBalance Int       @default(0)
+  Sale           Sale[]
+  Admin          Admin     @relation(fields: [adminId], references: [id])
+  adminId        String
+  Payment        Payment[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Vendor {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  contactPerson  String
+  phoneNumber    String     @unique
+  balance        Int        @default(0)
+  initialBalance Int        @default(0)
+  Purchase       Purchase[]
+  Admin          Admin      @relation(fields: [adminId], references: [id])
+  adminId        String
+  Payment        Payment[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Products {
+  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  serialNo          String              @unique
+  Description       String?
+  DescriptionTwo    String?
+  Category          String?
+  initialQuantity   Int                 @default(0)
+  // Quantity Working
+  QuantityAvailable Int?                @default(0)
+  price             Int                 @default(0)
+  image             Attachment[]
+  //
+  Sale              SaleOfProduct[]
+  //
+  Purchase          PurchaseOfProduct[]
+  //
+  Admin             Admin               @relation(fields: [adminId], references: [id])
+  adminId           String
+  //
+  ReturnPurchase    ReturnPurchase[]
+  SaleReturn        SaleReturn[]
+  // 
+  SerialNo          SerialNo[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+}
+
+model SerialNo {
+  id                  String            @id @default(auto()) @map("_id") @db.ObjectId
+  SerialNo            String            @unique()
+  //  Product
+  SerialNo_ProductId  String            @unique()
+  Products            Products          @relation(fields: [ProductId], references: [id])
+  ProductId           String
+  // SaleOfProduct
+  SaleOfProduct       SaleOfProduct     @relation(fields: [SaleOfProductId], references: [id])
+  SaleOfProductId     String
+  //  Purchase
+  PurchaseOfProduct   PurchaseOfProduct @relation(fields: [PurchaseOfProductId], references: [id])
+  PurchaseOfProductId String
+  // 
+  Admin               Admin             @relation(fields: [adminId], references: [id])
+  adminId             String
+  // 
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+}
+
+model Sale {
+  id         String          @id @default(auto()) @map("_id") @db.ObjectId
+  total      Int?
+  discount   Int?
+  Product    SaleOfProduct[]
+  Customer   Customer?       @relation(fields: [customerId], references: [id])
+  customerId String?
+  Payment    Payment[]
+  Admin      Admin           @relation(fields: [adminId], references: [id])
+  adminId    String
+  User       User?           @relation(fields: [userId], references: [id])
+  userId     String?
+  SaleReturn SaleReturn[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+}
+
+model SaleOfProduct {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  SaleId_ProductId String     @unique()
+  Sale             Sale       @relation(fields: [SaleId], references: [id])
+  SaleId           String // relation scalar field (used in the `@relation` attribute above)
+  Products         Products   @relation(fields: [ProductId], references: [id])
+  ProductId        String // relation scalar field (used in the `@relation` attribute above)
+  SerialNo         SerialNo[]
+  // Order Product Quantity Working
+  TotalQuantity    Int
+  price            Int
+  User             User?      @relation(fields: [userId], references: [id])
+  userId           String?
+  Admin            Admin      @relation(fields: [adminId], references: [id])
+  adminId          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SaleReturn {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  SaleId_ProductId String   @unique()
+  Sale             Sale     @relation(fields: [SaleId], references: [id])
+  SaleId           String // relation scalar field (used in the `@relation` attribute above)
+  Products         Products @relation(fields: [ProductId], references: [id])
+  ProductId        String // relation scalar field (used in the `@relation` attribute above)
+  // Order Product Quantity Working
+  TotalQuantity    Int
+  price            Int
+  User             User?    @relation(fields: [userId], references: [id])
+  userId           String?
+  Admin            Admin    @relation(fields: [adminId], references: [id])
+  adminId          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Purchase {
+  id             String              @id @default(auto()) @map("_id") @db.ObjectId
+  total          Int?
+  discount       Int?
+  BillNo         String?             @default(cuid())
+  Product        PurchaseOfProduct[]
+  ReturnPurchase ReturnPurchase[]
+  Vendor         Vendor?             @relation(fields: [vendorId], references: [id])
+  vendorId       String?
+  Payment        Payment[]
+  Admin          Admin               @relation(fields: [adminId], references: [id])
+  adminId        String
+  User           User?               @relation(fields: [userId], references: [id])
+  userId         String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model PurchaseOfProduct {
+  id                   String     @id @default(auto()) @map("_id") @db.ObjectId
+  PurchaseId_ProductId String     @unique()
+  Purchase             Purchase   @relation(fields: [PurchaseId], references: [id])
+  PurchaseId           String // relation scalar field (used in the `@relation` attribute above)
+  Products             Products   @relation(fields: [ProductId], references: [id])
+  ProductId            String // relation scalar field (used in the `@relation` attribute above)
+  SerialNo             SerialNo[]
+  // Order Product Quantity Working
+  price                Int
+  Quantity             Int
+  User                 User?      @relation(fields: [userId], references: [id])
+  userId               String?
+  Admin                Admin      @relation(fields: [adminId], references: [id])
+  adminId              String
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+}
+
+model ReturnPurchase {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  PurchaseId_ProductId String   @unique()
+  Purchase             Purchase @relation(fields: [PurchaseId], references: [id])
+  PurchaseId           String // relation scalar field (used in the `@relation` attribute above)
+  Products             Products @relation(fields: [ProductId], references: [id])
+  ProductId            String // relation scalar field (used in the `@relation` attribute above)
+  // Order Product Quantity Working
+  price                Int
+  Quantity             Int
+  User                 User?    @relation(fields: [userId], references: [id])
+  userId               String?
+  Admin                Admin    @relation(fields: [adminId], references: [id])
+  adminId              String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Payment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  BillNo          String
+  Amount          Int
+  type            String
+  Sale            Sale?     @relation(fields: [SaleId], references: [id])
+  SaleId          String? // relation scalar field (used in the `@relation` attribute above)
+  Purchase        Purchase? @relation(fields: [PurchaseId], references: [id])
+  PurchaseId      String? // relation scalar field (used in the `@relation` attribute above)
+  PaymentReceived Customer? @relation(fields: [customerId], references: [id])
+  customerId      String?
+  PaymentSent     Vendor?   @relation(fields: [vendorId], references: [id])
+  vendorId        String?
+  Admin           Admin     @relation(fields: [adminId], references: [id])
+  adminId         String
+  User            User?     @relation(fields: [userId], references: [id])
+  userId          String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Expense {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  Amount      Int
+  Category    String
+  Description String
+  User        User?    @relation(fields: [userId], references: [id])
+  userId      String?
+  Admin       Admin    @relation(fields: [adminId], references: [id])
+  adminId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Attachment {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  mimetype   String?
+  filename   String    @unique()
+  encoding   String?
+  Products   Products? @relation(fields: [productsId], references: [id])
+  productsId String?
+  User       User?
+  Admin      Admin?    @relation(fields: [adminId], references: [id])
+  adminId    String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Accounts {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  OpeningBalance Int?
+  ClosingBalance Int?
+  User           User?    @relation(fields: [userId], references: [id])
+  userId         String?
+  Admin          Admin    @relation(fields: [adminId], references: [id])
+  adminId        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
