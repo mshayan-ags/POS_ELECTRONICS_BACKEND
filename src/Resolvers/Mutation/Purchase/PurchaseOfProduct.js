@@ -45,9 +45,22 @@ function Admin(parent, args, context) {
 		.Admin();
 }
 
+function SerialNo(parent, args, context) {
+	const { prisma } = context;
+	return prisma.purchaseOfProduct
+		.findUnique({
+			where: {
+				PurchaseId_ProductId: `${parent.PurchaseId}_${parent.ProductId}`
+			},
+			select: { SerialNo: true }
+		})
+		.SerialNo();
+}
+
 module.exports = {
 	Products,
 	Purchase,
 	User,
-	Admin
+	Admin,
+	SerialNo
 };

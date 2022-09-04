@@ -4,7 +4,8 @@ const Admin = require("./Mutation/Admin/Relation");
 const User = require("./Mutation/User/Relation");
 const Customer = require("./Mutation/Customer/Relation");
 const Vendor = require("./Mutation/Vendor/Relation");
-const Products = require("./Mutation/Product/Relation");
+const Products = require("./Mutation/Product/Product");
+const SerialNo = require("./Mutation/Product/SerialNo");
 const Purchase = require("./Mutation/Purchase/Purchase");
 const PurchaseOfProduct = require("./Mutation/Purchase/PurchaseOfProduct");
 const ReturnPurchase = require("./Mutation/Purchase/ReturnPurchase");
@@ -24,6 +25,7 @@ module.exports = {
 	Customer,
 	Vendor,
 	Products,
+	SerialNo,
 	Purchase,
 	PurchaseOfProduct,
 	ReturnPurchase,

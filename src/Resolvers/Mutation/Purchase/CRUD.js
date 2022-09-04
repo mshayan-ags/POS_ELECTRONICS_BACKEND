@@ -39,6 +39,19 @@ async function CreatePurchase(parent, args, context, info) {
 				}
 			});
 
+			for (let index = 0; index < Products.length; index++) {
+				const Product = Products[index];
+				Product.SerialNo.map(async (ser) => {
+					const SerialNo = await prisma.serialNo.findUnique({
+						where: {
+							SerialNo_ProductId: `${ser}_${Product.ProductId}`,
+						}
+					})
+					if (SerialNo?.SerialNo == ser) {
+						throw new Error(`Purchase did'nt Created As Serial No : - ${SerialNo?.SerialNo} Already in Use`);
+					}
+				})
+			}
 
 			Products.map(async (pro) => {
 				await prisma.purchaseOfProduct.create({
@@ -49,10 +62,30 @@ async function CreatePurchase(parent, args, context, info) {
 								id: pro.ProductId
 							}
 						},
-						Purchase:{
+						Purchase: {
 							connect: {
 								id: Purchase.id
 							}
+						},
+						SerialNo: {
+							create: (pro.SerialNo.map((ser) => {
+								return (
+									{
+										SerialNo: ser,
+										SerialNo_ProductId: `${ser}_${pro.ProductId}`,
+										Products: {
+											connect: {
+												id: pro.ProductId
+											}
+										},
+										Admin: {
+											connect: {
+												id: adminId
+											}
+										},
+									}
+								)
+							}))
 						},
 						Admin: {
 							connect: {
@@ -75,9 +108,9 @@ async function CreatePurchase(parent, args, context, info) {
 
 
 			// Calculate Total
-			const Total = await QuantityTotal(Products,prisma);
+			const Total = await QuantityTotal(Products, prisma);
 			const Discount = Total - args.discount;
-			
+
 			await prisma.purchase.update({
 				where: {
 					id: Purchase.id
@@ -145,12 +178,47 @@ async function UpdatePurchase(parent, args, context, info) {
 				}
 			});
 
+
+			for (let index = 0; index < Products.length; index++) {
+				const Product = Products[index];
+				Product.SerialNo.map(async (ser) => {
+					const SerialNo = await prisma.serialNo.findUnique({
+						where: {
+							SerialNo_ProductId: `${ser}_${Product.ProductId}`,
+						}
+					})
+					if (SerialNo?.SerialNo == ser) {
+						throw new Error(`Purchase did'nt Updated As Serial No : - ${SerialNo?.SerialNo} Already in Use`);
+					}
+				})
+			}
+
 			Products.map(async (pro) => {
 				await prisma.purchaseOfProduct.update({
 					where: {
 						PurchaseId_ProductId: `${Purchase.id}_${pro.ProductId}`
 					},
 					data: {
+						SerialNo: {
+							create: (pro.SerialNo.map((ser) => {
+								return (
+									{
+										SerialNo: ser,
+										SerialNo_ProductId: `${ser}_${pro.ProductId}`,
+										Products: {
+											connect: {
+												id: pro.ProductId
+											}
+										},
+										Admin: {
+											connect: {
+												id: adminId
+											}
+										},
+									}
+								)
+							}))
+						},
 						Quantity: pro.ProductQuantity,
 						price: pro.Price
 					}
@@ -347,7 +415,7 @@ async function ReturnPurchase(parent, args, context, info) {
 			const Total = await QuantityTotal(Products, prisma);
 
 			const Discount = OldTotal - Number(Total - args.discount);
-		
+			
 			await prisma.purchase.update({
 				where: {
 					id: Purchase.id

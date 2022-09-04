@@ -54,6 +54,10 @@ function Accounts(parent, args, context) {
 	const { prisma } = context;
 	return prisma.admin.findUnique({ where: { id: parent.id } }).Accounts();
 }
+function SerialNo(parent, args, context) {
+	const { prisma } = context;
+	return prisma.admin.findUnique({ where: { id: parent.id } }).SerialNo();
+}
 
 module.exports = {
 	Sale,
@@ -69,5 +73,6 @@ module.exports = {
 	Payment,
 	ReturnPurchase,
 	SaleReturn,
-	Accounts
+	Accounts,
+	SerialNo
 };

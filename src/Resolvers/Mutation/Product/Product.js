@@ -22,6 +22,10 @@ function SaleReturn(parent, args, context) {
 	const { prisma } = context;
 	return prisma.products.findUnique({ where: { id: parent.id } }).SaleReturn();
 }
+function SerialNo(parent, args, context) {
+	const { prisma } = context;
+	return prisma.products.findUnique({ where: { id: parent.id } }).SerialNo();
+}
 
 module.exports = {
 	Sale,
@@ -29,5 +33,6 @@ module.exports = {
 	image,
 	Admin,
 	ReturnPurchase,
-	SaleReturn
+	SaleReturn,
+	SerialNo
 };

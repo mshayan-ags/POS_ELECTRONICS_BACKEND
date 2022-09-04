@@ -36,6 +36,21 @@ async function CreateSale(parent, args, context, info) {
 			}
 		});
 
+
+		for (let index = 0; index < Products.length; index++) {
+			const Product = Products[index];
+			Product.SerialNo.map(async (ser) => {
+				const SerialNo = await prisma.serialNo.findUnique({
+					where: {
+						SerialNo_ProductId: `${ser}_${Product.ProductId}`,
+					}
+				})
+				if (!SerialNo?.SerialNo || SerialNo?.SaleOfProduct?.id) {
+					throw new Error(`Sale did'nt Created As Serial No : - ${SerialNo?.SerialNo} is Either User or Not Available`);
+				}
+			})
+		}
+
 		Products.map(async (pro) => {
 			await prisma.saleOfProduct.create({
 				data: {
@@ -49,6 +64,15 @@ async function CreateSale(parent, args, context, info) {
 						connect: {
 							id: Sale.id
 						}
+					},
+					SerialNo: {
+						connect: (pro.SerialNo.map((ser) => {
+							return (
+								{
+									SerialNo_ProductId: `${ser}_${pro.ProductId}`,
+								}
+							)
+						}))
 					},
 					Admin: {
 						connect: {
@@ -151,12 +175,36 @@ async function UpdateSale(parent, args, context, info) {
 				}
 			});
 
+
+			for (let index = 0; index < Products.length; index++) {
+				const Product = Products[index];
+				Product.SerialNo.map(async (ser) => {
+					const SerialNo = await prisma.serialNo.findUnique({
+						where: {
+							SerialNo_ProductId: `${ser}_${Product.ProductId}`,
+						}
+					})
+					if (!SerialNo?.SerialNo || SerialNo?.SaleOfProduct?.id) {
+						throw new Error(`Sale did'nt Created As Serial No : - ${SerialNo?.SerialNo} is Either User or Not Available`);
+					}
+				})
+			}
+
 			Products.map(async (pro) => {
 				await prisma.saleOfProduct.update({
 					where: {
 						SaleId_ProductId: `${Sale.id}_${pro.ProductId}`
 					},
 					data: {
+						SerialNo: {
+							connect: (pro.SerialNo.map((ser) => {
+								return (
+									{
+										SerialNo_ProductId: `${ser}_${pro.ProductId}`,
+									}
+								)
+							}))
+						},
 						TotalQuantity: pro.ProductQuantity,
 						price: pro.Price
 					}

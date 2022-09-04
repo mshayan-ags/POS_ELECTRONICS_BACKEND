@@ -54,14 +54,10 @@ type Mutation {
 		profilePicture: Upload
 	): AuthPayloadAdmin!
 	loginAdmin(email: String!, password: String!): AuthPayloadAdmin!
-	updateAdmin(
-		name: String
-		numberOfUser: Int
-		profilePicture: Upload
-	): Status!
+	updateAdmin(name: String, numberOfUser: Int, profilePicture: Upload): Status!
 	deleteAdmin(id: String!): Status!
 	changePasswordAdmin(oldPassword: String!, newPassword: String!): Status!
-	
+
 	# User
 	createUser(
 		name: String!
@@ -70,7 +66,7 @@ type Mutation {
 		Role: String
 		profilePicture: Upload
 	): Status!
-	loginUser(adminEmail: String!,email: String!, password: String!): AuthPayloadUser!
+	loginUser(adminEmail: String!, email: String!, password: String!): AuthPayloadUser!
 	updateUser(
 		id: String!
 		name: String
@@ -224,6 +220,7 @@ input ProductArray {
 	ProductId: String!
 	ProductQuantity: Int!
 	Price: Int
+	SerialNo: [String!]!
 }
 
 type Calculation {
@@ -279,6 +276,7 @@ type Admin {
 	ReturnPurchase: [ReturnPurchase]
 	SaleReturn: [SaleReturn]
 	Accounts: [Accounts]
+	SerialNo: [SerialNo]
 	createdAt: DateTime
 	updatedAt: DateTime
 }
@@ -355,6 +353,29 @@ type Products {
 	ReturnPurchase: [ReturnPurchase]
 	SaleReturn: [SaleReturn]
 	#
+	SerialNo: [SerialNo]
+	#
+	Admin: Admin
+	adminId: String
+	#
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type SerialNo {
+	id: String
+	SerialNo: String
+	#  Product
+	SerialNo_ProductId: String
+	Products: Products
+	ProductId: String
+	# SaleOfProduct
+	SaleOfProduct: SaleOfProduct
+	SaleOfProductId: String
+	#  Purchase
+	PurchaseOfProduct: PurchaseOfProduct
+	PurchaseOfProductId: String
+	#
 	Admin: Admin
 	adminId: String
 	#
@@ -385,6 +406,7 @@ type SaleOfProduct {
 	SaleId: String
 	Products: Products
 	ProductId: String
+	SerialNo: [SerialNo]
 	# Order Product Quantity Working
 	TotalQuantity: Int
 	price: Int
@@ -437,6 +459,7 @@ type PurchaseOfProduct {
 	PurchaseId: String
 	Products: Products
 	ProductId: String
+	SerialNo: [SerialNo]
 	# Order Product Quantity Working
 	price: Int
 	Quantity: Int
