@@ -13,10 +13,6 @@
 		"preprisma:deploy": "npm run prisma:format",
 		"prisma": "prisma format && prisma db push && prisma generate"
 	},
-	"engines": {
-		"node": "^16.14.0",
-		"npm": "^8.3.0"
-	},
 	"resolutions": {
 		"**/**/fs-capacitor": "^6.2.0",
 		"**/graphql-upload": "^11.0.0"
