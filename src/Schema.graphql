@@ -38,6 +38,10 @@ type Query {
 	# Accounts
 	Accounts(startDate: String!, endDate: String): [Accounts!]!
 	AccountInfo(id: String!): Accounts!
+	# Serial No 
+	SerialNo: [SerialNo!]!
+	SerialNoInfo(SerialNo: String!): SerialNo!
+	
 }
 
 type Mutation {

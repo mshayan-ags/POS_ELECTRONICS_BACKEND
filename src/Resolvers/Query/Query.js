@@ -8,7 +8,8 @@ const { Sale, SaleInfo, SaleOfProduct, SaleOfProductInfo } = require("./Sale");
 const { Payment, PaymentInfo } = require("./Payment");
 const { Calculation } = require("./Dashboard");
 const { Expense, ExpenseInfo } = require("./Expense");
-const { Accounts,	AccountInfo } = require("./Accounts");
+const { Accounts, AccountInfo } = require("./Accounts");
+const { SerialNo, SerialNoInfo } = require("./SerialNo");
 
 
 module.exports = {
@@ -34,8 +35,10 @@ module.exports = {
 	Payment,
 	PaymentInfo,
 	Calculation,
-	Expense, 
+	Expense,
 	ExpenseInfo,
 	Accounts,
-	AccountInfo
+	AccountInfo,
+	SerialNo,
+	SerialNoInfo
 };
