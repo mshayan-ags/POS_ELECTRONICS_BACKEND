@@ -10,11 +10,18 @@ async function SerialNo(parent, args, context, info) {
 
 function SerialNoInfo(parent, args, context, info) {
   const { prisma } = context;
-  return prisma.serialNo.findUnique({
+  const SerialNo = prisma.serialNo.findUnique({
     where: {
       SerialNo: args.SerialNo
     }
   });
+  if (SerialNo) {
+    return SerialNo
+  } else {
+    return {
+      SerialNo: ""
+    }
+  }
 }
 
 module.exports = {
