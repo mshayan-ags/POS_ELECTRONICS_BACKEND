@@ -8,18 +8,19 @@ async function SerialNo(parent, args, context, info) {
   });
 }
 
-function SerialNoInfo(parent, args, context, info) {
+async function SerialNoInfo(parent, args, context, info) {
   const { prisma } = context;
-  const SerialNo = prisma.serialNo.findUnique({
+  const SerialNo =await prisma.serialNo.findUnique({
     where: {
       SerialNo: args.SerialNo
     }
   });
+  console.log(SerialNo)
   if (SerialNo) {
     return SerialNo
   } else {
     return {
-      SerialNo: ""
+      SerialNo: SerialNo
     }
   }
 }
