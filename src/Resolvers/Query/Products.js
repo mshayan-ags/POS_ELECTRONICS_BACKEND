@@ -12,7 +12,20 @@ function ProductInfo(parent, args, context, info) {
 	});
 }
 
+
+function ProductSerialNoInfo(parent, args, context, info) {
+	const { prisma } = context;
+	return prisma.products.findUnique({
+		where: {
+			serialNo: {
+				contains: args.serialNo,
+			}
+		}
+	});
+}
+
 module.exports = {
 	Products,
-	ProductInfo
+	ProductInfo,
+	ProductSerialNoInfo
 };

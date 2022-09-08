@@ -2,7 +2,7 @@ const { Admin, loggedInAdmin } = require("./Admin");
 const { User, loggedInUser, UserInfo } = require("./Users");
 const { Customer, CustomerInfo } = require("./Customer");
 const { Vendor, VendorInfo } = require("./Vendor");
-const { Products, ProductInfo } = require("./Products");
+const { Products, ProductInfo, ProductSerialNoInfo } = require("./Products");
 const { Purchase, PurchaseInfo, PurchaseOfProduct, PurchaseOfProductInfo } = require("./Purchase");
 const { Sale, SaleInfo, SaleOfProduct, SaleOfProductInfo } = require("./Sale");
 const { Payment, PaymentInfo } = require("./Payment");
@@ -24,6 +24,7 @@ module.exports = {
 	CustomerInfo,
 	Products,
 	ProductInfo,
+	ProductSerialNoInfo,
 	Purchase,
 	PurchaseInfo,
 	PurchaseOfProduct,

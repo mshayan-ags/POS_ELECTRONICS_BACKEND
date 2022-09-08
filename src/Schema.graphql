@@ -17,6 +17,7 @@ type Query {
 	# Product
 	Products: [Products!]!
 	ProductInfo(id: String!): Products!
+	ProductSerialNoInfo(serialNo: String!): Products!
 	# Purchase
 	Purchase: [Purchase!]!
 	PurchaseInfo(id: String!): Purchase!
