@@ -15,7 +15,6 @@ async function SerialNoInfo(parent, args, context, info) {
       SerialNo: args.SerialNo
     }
   });
-  console.log(SerialNo)
   if (SerialNo) {
     return SerialNo
   } else {

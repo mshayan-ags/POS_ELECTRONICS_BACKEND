@@ -33,19 +33,35 @@ const server = new ApolloServer({
 	uploads: { maxFileSize: 1024 * 1024 * 1024 * 1024 * 15, maxFiles: 30 },
 	introspection: true,
 	playground: true,
-	context: ({ req }) => {
+	context: async ({ req }) => {
+		const prisma = new PrismaClient({
+			datasources: {
+				db: {
+					url:
+						req && req.headers.authorization
+							? `${process.env.DATABASE_URL}/${getUserId(req).username}?retryWrites=true&w=majority`
+							: `${process.env.DATABASE_URL}/POS?retryWrites=true&w=majority`
+				}
+			}
+		})
+		await prisma.accounts.findMany({})
+		await prisma.admin.findMany({})
+		await prisma.customer.findMany({})
+		await prisma.expense.findMany({})
+		await prisma.payment.findMany({})
+		await prisma.products.findMany({})
+		await prisma.purchase.findMany({})
+		await prisma.purchaseOfProduct.findMany({})
+		await prisma.returnPurchase.findMany({})
+		await prisma.sale.findMany({})
+		await prisma.saleOfProduct.findMany({})
+		await prisma.saleReturn.findMany({})
+		await prisma.serialNo.findMany({})
+		await prisma.user.findMany({})
+		await prisma.vendor.findMany({})
 		return {
 			...req,
-			prisma: new PrismaClient({
-				datasources: {
-					db: {
-						url:
-							req && req.headers.authorization
-								? `${process.env.DATABASE_URL}/${getUserId(req).username}?retryWrites=true&w=majority`
-								: `${process.env.DATABASE_URL}/POS?retryWrites=true&w=majority`
-					}
-				}
-			}),
+			prisma: prisma,
 			userId: req && req.headers.authorization && getUserId(req).userId,
 			Role: req && req.headers.authorization && getUserId(req).Role,
 			adminId: req && req.headers.authorization && getUserId(req).adminId
