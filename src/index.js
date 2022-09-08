@@ -44,21 +44,7 @@ const server = new ApolloServer({
 				}
 			}
 		})
-		await prisma.accounts.findMany({})
-		await prisma.admin.findMany({})
-		await prisma.customer.findMany({})
-		await prisma.expense.findMany({})
-		await prisma.payment.findMany({})
-		await prisma.products.findMany({})
-		await prisma.purchase.findMany({})
-		await prisma.purchaseOfProduct.findMany({})
-		await prisma.returnPurchase.findMany({})
-		await prisma.sale.findMany({})
-		await prisma.saleOfProduct.findMany({})
-		await prisma.saleReturn.findMany({})
-		await prisma.serialNo.findMany({})
-		await prisma.user.findMany({})
-		await prisma.vendor.findMany({})
+	
 		return {
 			...req,
 			prisma: prisma,

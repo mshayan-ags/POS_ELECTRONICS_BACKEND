@@ -23,9 +23,9 @@ model SuperAdmin {
 
 model Admin {
   id                 String              @id @default(auto()) @map("_id") @db.ObjectId
-  username           String              @unique()
+  username           String              @unique
   name               String
-  email              String              @unique()
+  email              String              @unique
   password           String
   numberOfUser       Int                 @default(1)
   Sale               Sale[]
@@ -53,7 +53,7 @@ model User {
   id                 String              @id @default(auto()) @map("_id") @db.ObjectId
   name               String
   Role               UserType            @default(User)
-  email              String              @unique()
+  email              String              @unique
   password           String
   ProductsSaled      SaleOfProduct[]
   ProductsPurchased  PurchaseOfProduct[]
@@ -136,9 +136,9 @@ model Products {
 
 model SerialNo {
   id                  String             @id @default(auto()) @map("_id") @db.ObjectId
-  SerialNo            String             @unique()
+  SerialNo            String             @unique
   //  Product
-  SerialNo_ProductId  String             @unique()
+  SerialNo_ProductId  String             @unique
   Products            Products           @relation(fields: [ProductId], references: [id])
   ProductId           String
   // SaleOfProduct
@@ -174,7 +174,7 @@ model Sale {
 
 model SaleOfProduct {
   id               String     @id @default(auto()) @map("_id") @db.ObjectId
-  SaleId_ProductId String     @unique()
+  SaleId_ProductId String     @unique
   Sale             Sale       @relation(fields: [SaleId], references: [id])
   SaleId           String // relation scalar field (used in the `@relation` attribute above)
   Products         Products   @relation(fields: [ProductId], references: [id])
@@ -194,7 +194,7 @@ model SaleOfProduct {
 
 model SaleReturn {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  SaleId_ProductId String   @unique()
+  SaleId_ProductId String   @unique
   Sale             Sale     @relation(fields: [SaleId], references: [id])
   SaleId           String // relation scalar field (used in the `@relation` attribute above)
   Products         Products @relation(fields: [ProductId], references: [id])
@@ -231,7 +231,7 @@ model Purchase {
 
 model PurchaseOfProduct {
   id                   String     @id @default(auto()) @map("_id") @db.ObjectId
-  PurchaseId_ProductId String     @unique()
+  PurchaseId_ProductId String     @unique
   Purchase             Purchase   @relation(fields: [PurchaseId], references: [id])
   PurchaseId           String // relation scalar field (used in the `@relation` attribute above)
   Products             Products   @relation(fields: [ProductId], references: [id])
@@ -250,7 +250,7 @@ model PurchaseOfProduct {
 
 model ReturnPurchase {
   id                   String   @id @default(auto()) @map("_id") @db.ObjectId
-  PurchaseId_ProductId String   @unique()
+  PurchaseId_ProductId String   @unique
   Purchase             Purchase @relation(fields: [PurchaseId], references: [id])
   PurchaseId           String // relation scalar field (used in the `@relation` attribute above)
   Products             Products @relation(fields: [ProductId], references: [id])
@@ -303,7 +303,7 @@ model Expense {
 model Attachment {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   mimetype   String?
-  filename   String    @unique()
+  filename   String    @unique
   encoding   String?
   Products   Products? @relation(fields: [productsId], references: [id])
   productsId String?
