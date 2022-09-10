@@ -34,12 +34,13 @@ async function QuantityTotal(Products, prisma) {
 
 		ExtractProduct.QuantityAvailable =
 			Number(PurchaseQuantity - ReturnPurchaseQuantity) - Number(SaleQuantity - SaleReturnQuantity);
-
+		console.log(ExtractProduct.QuantityAvailable)
 		AllProducts.push(ExtractProduct);
 	}
 
 	for (let index = 0; index < AllProducts.length; index++) {
 		if (AllProducts[index].id === Products[index].ProductId) {
+			console.log(AllProducts[index].QuantityAvailable)
 			await prisma.products.update({
 				where: { id: Products[index].ProductId },
 				data: {
