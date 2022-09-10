@@ -73,20 +73,6 @@ async function DeleteVendor(parent, args, context, info) {
 		throw new Error("You must be Logged in");
 	} else if (adminId && Role == "Admin") {
 		try {
-			// const Purchase = await prisma.purchase.findMany({ where: { vendorId: args.id } });
-			// await prisma.payment.deleteMany({ where: { vendorId: args.id } });
-
-			// for (let index = 0; index < Purchase.length; index++) {
-			// 	const GetPurchase = await prisma.purchaseOfProduct.findMany({
-			// 		where: { PurchaseId: Purchase[index].id }
-			// 	});
-			// 	await prisma.purchaseOfProduct.deleteMany({ where: { PurchaseId: Purchase[index].id } });
-			// 	for (let index = 0; index < GetPurchase.length; index++) {
-			// 		await QuantityTotal(GetPurchase[index]);
-			// 	}
-			// 	await prisma.purchase.delete({ where: { id: Purchase[index].id } });
-			// }
-
 			const DeleteVendorData = await prisma.vendor.delete({
 				where: { id: args.id }
 			});

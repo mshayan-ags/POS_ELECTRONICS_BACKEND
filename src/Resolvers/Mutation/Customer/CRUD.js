@@ -77,20 +77,6 @@ async function DeleteCustomer(parent, args, context, info) {
 		if (!adminId && Role !== "Admin") {
 			throw new Error("You must be Logged in");
 		} else if (adminId && Role == "Admin") {
-			// const Sale = await prisma.sale.findMany({ where: { customerId: args.id } });
-			// await prisma.payment.deleteMany({ where: { customerId: args.id } });
-
-			// for (let index = 0; index < Sale.length; index++) {
-			// 	const GetSale = await prisma.saleOfProduct.findMany({
-			// 		where: { SaleId: Sale[index].id }
-			// 	});
-			// 	await prisma.saleOfProduct.deleteMany({ where: { SaleId: Sale[index].id } });
-			// 	for (let index = 0; index < GetSale.length; index++) {
-			// 		await QuantityTotal(GetSale[index]);
-			// 	}
-			// 	await prisma.sale.delete({ where: { id: Sale[index].id } });
-			// }
-
 			const DeleteCustomerData = await prisma.customer.delete({
 				where: { id: args.id }
 			});

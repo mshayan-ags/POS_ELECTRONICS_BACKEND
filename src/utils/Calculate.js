@@ -1,48 +1,49 @@
 
-async function QuantityTotal(Products, prisma) {
+async function QuantityTotal(Products, identifier, prisma) {
 	const AllProducts = [];
 	let Total = 0;
 	const CalculateLength = [];
-
+	
 	for (let index = 0; index < Products.length; index++) {
+		const ProductId = Products[index]?.[identifier]
 		let SaleQuantity = 0;
 		let PurchaseQuantity = 0;
 		let ReturnPurchaseQuantity = 0;
 		let SaleReturnQuantity = 0;
 
 		const ExtractProduct = await prisma.products.findUnique({
-			where: { id: Products[index].ProductId }
+			where: { id: ProductId }
 		});
 		const ProductSales = await prisma.saleOfProduct.findMany({
-			where: { ProductId: Products[index].ProductId }
+			where: { ProductId: ProductId }
 		});
 		ProductSales.map((a) => (SaleQuantity += a.TotalQuantity));
 		const ProductPurchase = await prisma.purchaseOfProduct.findMany({
-			where: { ProductId: Products[index].ProductId }
+			where: { ProductId: ProductId }
 		});
 		ProductPurchase.map((a) => (PurchaseQuantity += a.Quantity));
 
 		const ProductReturnPurchase = await prisma.returnPurchase.findMany({
-			where: { ProductId: Products[index].ProductId }
+			where: { ProductId: ProductId }
 		});
 		ProductReturnPurchase.map((a) => (ReturnPurchaseQuantity += a.Quantity));
 
 		const ProductSalesReturn = await prisma.saleReturn.findMany({
-			where: { ProductId: Products[index].ProductId }
+			where: { ProductId: ProductId }
 		});
 		ProductSalesReturn.map((a) => (SaleReturnQuantity += a.TotalQuantity));
 
 		ExtractProduct.QuantityAvailable =
-			Number(PurchaseQuantity - ReturnPurchaseQuantity) - Number(SaleQuantity - SaleReturnQuantity);
-		console.log(ExtractProduct.QuantityAvailable)
+			Number(Number(PurchaseQuantity) - Number(ReturnPurchaseQuantity)) - Number(Number(SaleQuantity) - Number(SaleReturnQuantity));
+
 		AllProducts.push(ExtractProduct);
 	}
 
 	for (let index = 0; index < AllProducts.length; index++) {
-		if (AllProducts[index].id === Products[index].ProductId) {
-			console.log(AllProducts[index].QuantityAvailable)
+		const ProductId = Products[index]?.[identifier]
+		if (AllProducts[index].id === ProductId) {
 			await prisma.products.update({
-				where: { id: Products[index].ProductId },
+				where: { id: ProductId },
 				data: {
 					QuantityAvailable: AllProducts[index].QuantityAvailable
 				}

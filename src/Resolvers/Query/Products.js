@@ -1,15 +1,21 @@
+const { QuantityTotal } = require("../../utils/Calculate");
+
 async function Products(parent, args, context, info) {
 	const { adminId, prisma } = context;
-	return prisma.products.findMany({ where: { adminId: adminId } });
+	const AllProducts = await prisma.products.findMany({ where: { adminId: adminId } });
+	await QuantityTotal(AllProducts, "id", prisma)
+	return AllProducts
 }
 
-function ProductInfo(parent, args, context, info) {
+async function ProductInfo(parent, args, context, info) {
 	const { prisma } = context;
-	return prisma.products.findUnique({
+	const Product = await prisma.products.findUnique({
 		where: {
 			id: args.id
 		}
 	});
+	await QuantityTotal(Product, "id", prisma)
+	return Product
 }
 
 
