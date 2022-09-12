@@ -139,7 +139,8 @@ async function CreatePurchase(parent, args, context, info) {
 
 			return {
 				success: true,
-				message: "Purchase Created Successfully..."
+				message: "Purchase Created Successfully...",
+				debugMessage: Purchase.id
 			};
 		}
 	} catch (e) {
