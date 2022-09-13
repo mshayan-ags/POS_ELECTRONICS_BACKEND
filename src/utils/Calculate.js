@@ -3,7 +3,7 @@ async function QuantityTotal(Products, identifier, prisma) {
 	const AllProducts = [];
 	let Total = 0;
 	const CalculateLength = [];
-	
+
 	for (let index = 0; index < Products.length; index++) {
 		const ProductId = Products[index]?.[identifier]
 		let SaleQuantity = 0;
@@ -33,10 +33,12 @@ async function QuantityTotal(Products, identifier, prisma) {
 		});
 		ProductSalesReturn.map((a) => (SaleReturnQuantity += a.TotalQuantity));
 
-		ExtractProduct.QuantityAvailable =
-			Number(Number(PurchaseQuantity) - Number(ReturnPurchaseQuantity)) - Number(Number(SaleQuantity) - Number(SaleReturnQuantity));
+		let CurrQuantityAvailable = Number(Number(PurchaseQuantity) - Number(ReturnPurchaseQuantity)) - Number(Number(SaleQuantity) - Number(SaleReturnQuantity));
 
-		AllProducts.push(ExtractProduct);
+		if (CurrQuantityAvailable !== ExtractProduct.QuantityAvailable) {
+			ExtractProduct.QuantityAvailable = CurrQuantityAvailable
+			AllProducts.push(ExtractProduct);
+		}
 	}
 
 	for (let index = 0; index < AllProducts.length; index++) {
