@@ -145,6 +145,8 @@ async function deleteUser(parent, args, context, info) {
 			await prisma.user.update({
 				where: {
 					id: args.id,
+				},
+				data:{
 					isDeleted: true,
 				}
 			});
