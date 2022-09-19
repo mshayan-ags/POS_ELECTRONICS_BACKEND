@@ -66,9 +66,10 @@ model User {
   SaleReturn         SaleReturn[]
   Payment            Payment[]
   Accounts           Accounts[]
-  createdAt          DateTime            @default(now())
   Sale               Sale[]
   Purchase           Purchase[]
+  isDeleted          Boolean             @default(false)
+  createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 }
 

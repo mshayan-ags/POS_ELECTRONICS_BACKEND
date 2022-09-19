@@ -71,7 +71,7 @@ async function loginUser(parent, args, context, info) {
 		const prisma = new PrismaClient({ datasources: { db: { url: `${process.env.DATABASE_URL}/${DBName}?retryWrites=true&w=majority` } } })
 
 		const User = await prisma.user.findUnique({ where: { email: args.email } });
-		if (!User) {
+		if (!User || User.isDeleted) {
 			throw new Error("No such User found");
 		}
 
@@ -142,9 +142,10 @@ async function deleteUser(parent, args, context, info) {
 		if (!adminId && Role !== "Admin") {
 			throw new Error("You must be Logged in as Super Admin or Admin");
 		} else if (adminId && Role && Role != "User") {
-			await prisma.user.delete({
+			await prisma.user.update({
 				where: {
-					id: args.id
+					id: args.id,
+					isDeleted: true,
 				}
 			});
 			return {
@@ -176,6 +177,9 @@ async function changePasswordUser(parent, args, context, info) {
 					id: userId
 				}
 			});
+			if (!user || user.isDeleted) {
+				throw new Error("No such User found");
+			}
 
 			const valid = await bcrypt.compare(args.oldPassword, user.password);
 			if (!valid) {
