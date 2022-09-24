@@ -35,7 +35,7 @@ async function QuantityTotal(Products, identifier, prisma) {
 
 		let CurrQuantityAvailable = Number(Number(PurchaseQuantity) - Number(ReturnPurchaseQuantity)) - Number(Number(SaleQuantity) - Number(SaleReturnQuantity));
 
-		if (Number(ExtractProduct.QuantityAvailable) !== CurrQuantityAvailable) {
+		if (Number(ExtractProduct.QuantityAvailable) !== Number(CurrQuantityAvailable)) {
 			ExtractProduct.QuantityAvailable = CurrQuantityAvailable
 			AllProducts.push(ExtractProduct);
 		}
