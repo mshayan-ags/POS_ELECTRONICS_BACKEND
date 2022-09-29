@@ -90,7 +90,7 @@ async function loginAdmin(parent, args, context, info) {
 		}
 
 		// 2
-		const valid = await bcrypt.compare(args.password, admin.password);
+		const valid = await bcrypt.compare(args.password, admin?.password);
 		if (!valid) {
 			throw new Error("Invalid password");
 		}
