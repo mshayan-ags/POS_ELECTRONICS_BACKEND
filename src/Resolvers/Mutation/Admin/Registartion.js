@@ -85,7 +85,7 @@ async function loginAdmin(parent, args, context, info) {
 		const prismaAdminDB = new PrismaClient({ datasources: { db: { url: `${process.env.DATABASE_URL}/${DBName}?retryWrites=true&w=majority` } } })
 
 		const admin = await prismaAdminDB.admin.findUnique({ where: { email: args.email } });
-		if (!admin && admin.isDeleted) {
+		if (!admin && admin?.isDeleted) {
 			throw new Error("No such admin found");
 		}
 
@@ -124,7 +124,7 @@ async function updateAdmin(parent, args, context, info) {
 		delete Data.profilePicture
 
 		const admin = await prisma.admin.findUnique({ where: { email: adminId } });
-		if (!admin && admin.isDeleted) {
+		if (!admin && admin?.isDeleted) {
 			throw new Error("No such admin found");
 		}
 
@@ -199,7 +199,7 @@ async function changePasswordAdmin(parent, args, context, info) {
 				}
 			});
 
-			if (!admin && admin.isDeleted) {
+			if (!admin && admin?.isDeleted) {
 				throw new Error("No such admin found");
 			}
 

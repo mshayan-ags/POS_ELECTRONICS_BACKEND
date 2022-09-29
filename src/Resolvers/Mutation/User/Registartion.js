@@ -71,7 +71,7 @@ async function loginUser(parent, args, context, info) {
 		const prisma = new PrismaClient({ datasources: { db: { url: `${process.env.DATABASE_URL}/${DBName}?retryWrites=true&w=majority` } } })
 
 		const User = await prisma.user.findUnique({ where: { email: args.email } });
-		if (!User || User.isDeleted) {
+		if (!User || User?.isDeleted) {
 			throw new Error("No such User found");
 		}
 
@@ -179,7 +179,7 @@ async function changePasswordUser(parent, args, context, info) {
 					id: userId
 				}
 			});
-			if (!user || user.isDeleted) {
+			if (!user || user?.isDeleted) {
 				throw new Error("No such User found");
 			}
 
