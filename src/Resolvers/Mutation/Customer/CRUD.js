@@ -40,10 +40,10 @@ async function UpdateCustomer(parent, args, context, info) {
 		if (!userId && !adminId) {
 			throw new Error("You must be Logged in");
 		} else if (adminId && Role == "Admin") {
-			
-			const Data = {...args}
+
+			const Data = { ...args }
 			delete Data.id
-			
+
 			const UpdateCustomer = await prisma.customer.update({
 				where: { id: args.id },
 				data: {
@@ -51,11 +51,12 @@ async function UpdateCustomer(parent, args, context, info) {
 				}
 			});
 
-			CalculateCustomerBalance(args.id, prisma);
-
-			if (!UpdateCustomer) {
+			if (!UpdateCustomer || UpdateCustomer.isDeleted) {
 				throw new Error("No such Customer found");
 			}
+
+			CalculateCustomerBalance(args.id, prisma);
+
 
 			return {
 				success: true,
@@ -77,8 +78,9 @@ async function DeleteCustomer(parent, args, context, info) {
 		if (!adminId && Role !== "Admin") {
 			throw new Error("You must be Logged in");
 		} else if (adminId && Role == "Admin") {
-			const DeleteCustomerData = await prisma.customer.delete({
-				where: { id: args.id }
+			const DeleteCustomerData = await prisma.customer.update({
+				where: { id: args.id },
+				data: { isDeleted: true }
 			});
 
 			if (!DeleteCustomerData) {

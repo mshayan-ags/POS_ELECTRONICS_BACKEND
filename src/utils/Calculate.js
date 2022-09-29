@@ -15,30 +15,30 @@ async function QuantityTotal(Products, identifier, prisma) {
 			where: { id: ProductId }
 		});
 		const ProductSales = await prisma.saleOfProduct.findMany({
-			where: { ProductId: ProductId }
+			where: {
+				ProductId: ProductId, isDeleted: false,
+			}
 		});
 		ProductSales.map((a) => (SaleQuantity += a.TotalQuantity));
 		const ProductPurchase = await prisma.purchaseOfProduct.findMany({
-			where: { ProductId: ProductId }
+			where: { ProductId: ProductId, isDeleted: false, }
 		});
 		ProductPurchase.map((a) => (PurchaseQuantity += a.Quantity));
 
 		const ProductReturnPurchase = await prisma.returnPurchase.findMany({
-			where: { ProductId: ProductId }
+			where: { ProductId: ProductId, isDeleted: false, }
 		});
 		ProductReturnPurchase.map((a) => (ReturnPurchaseQuantity += a.Quantity));
 
 		const ProductSalesReturn = await prisma.saleReturn.findMany({
-			where: { ProductId: ProductId }
+			where: { ProductId: ProductId, isDeleted: false, }
 		});
 		ProductSalesReturn.map((a) => (SaleReturnQuantity += a.TotalQuantity));
 
 		let CurrQuantityAvailable = Number(Number(PurchaseQuantity) - Number(ReturnPurchaseQuantity)) - Number(Number(SaleQuantity) - Number(SaleReturnQuantity));
 
-		if (CurrQuantityAvailable !== ExtractProduct.QuantityAvailable) {
-			ExtractProduct.QuantityAvailable = CurrQuantityAvailable
-			AllProducts.push(ExtractProduct);
-		}
+		ExtractProduct.QuantityAvailable = CurrQuantityAvailable
+		AllProducts.push(ExtractProduct);
 	}
 
 	for (let index = 0; index < AllProducts.length; index++) {
@@ -61,8 +61,8 @@ async function QuantityTotal(Products, identifier, prisma) {
 }
 
 async function CalculateVendorBalance(VendorID, prisma) {
-	const Payments = await prisma.payment.findMany({ where: { vendorId: VendorID } })
-	const Purchase = await prisma.purchase.findMany({ where: { vendorId: VendorID } });
+	const Payments = await prisma.payment.findMany({ where: { vendorId: VendorID, isDeleted: false } })
+	const Purchase = await prisma.purchase.findMany({ where: { vendorId: VendorID, isDeleted: false } });
 	const Vendor = await prisma.vendor.findUnique({ where: { id: VendorID } });
 
 	let PaymentSent = 0;
@@ -87,9 +87,9 @@ async function CalculateVendorBalance(VendorID, prisma) {
 }
 
 async function CalculateCustomerBalance(customerID, prisma) {
-	const Payments = await prisma.payment.findMany({ where: { customerId: customerID } })
-	const Sale = await prisma.sale.findMany({ where: { customerId: customerID } });
-	const Customer = await prisma.customer.findUnique({ where: { id: customerID } });
+	const Payments = await prisma.payment.findMany({ where: { customerId: customerID, isDeleted: false, } })
+	const Sale = await prisma.sale.findMany({ where: { customerId: customerID, isDeleted: false, } });
+	const Customer = await prisma.customer.findUnique({ where: { id: customerID, isDeleted: false, } });
 
 	let PaymentReceived = 0;
 	let PaymentLeft = 0;

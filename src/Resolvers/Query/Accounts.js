@@ -10,18 +10,24 @@ async function Accounts(parent, args, context, info) {
 			createdAt: {
 				gte: new Date(args.startDate),
 				lt: new Date(args.endDate)
-			}
+			},
+			isDeleted: false,
 		}
 	});
 }
 
 function AccountInfo(parent, args, context, info) {
 	const { prisma } = context;
-	return prisma.accounts.findUnique({
+	const Data = prisma.accounts.findUnique({
 		where: {
 			id: args.id
 		}
 	});
+	if (!Data?.isDeleted) {
+		return Data;
+	} else {
+		throw new Error("No Such Record Found");
+	}
 }
 
 module.exports = {

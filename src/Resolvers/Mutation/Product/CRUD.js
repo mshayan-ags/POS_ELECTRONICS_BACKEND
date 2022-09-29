@@ -77,7 +77,7 @@ async function UpdateProduct(parent, args, context, info) {
 			const Data = { ...args }
 			delete Data.id
 
-			await prisma.products.update({
+			const Product = await prisma.products.update({
 				where: { id: args.id },
 				data: {
 					...Data,
@@ -98,7 +98,9 @@ async function UpdateProduct(parent, args, context, info) {
 						: false)
 				}
 			});
-
+			if (!Product || Product.isDeleted) {
+				throw new Error("No such Product found");
+			}
 			return {
 				success: true,
 				message: "Product Updated Successfully ..."
@@ -121,18 +123,13 @@ async function DeleteProduct(parent, args, context, info) {
 			throw new Error("You must be Logged in");
 		}
 		else if (adminId && Role == "Admin") {
-			await prisma.purchaseOfProduct.deleteMany({
-				where: { ProductId: args.id }
+			const Product = await prisma.products.update({
+				where: { id: args.id },
+				data: { isDeleted: true }
 			});
-
-			await prisma.saleOfProduct.deleteMany({
-				where: { ProductId: args.id }
-			});
-
-			await prisma.products.delete({
-				where: { id: args.id }
-			});
-
+			if (!Product) {
+				throw new Error("No such Product found");
+			}
 			return {
 				success: true,
 				message: "Product Deleted Successfully ..."

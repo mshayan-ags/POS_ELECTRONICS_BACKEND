@@ -163,6 +163,16 @@ async function UpdatePurchase(parent, args, context, info) {
 			throw new Error("You must be Logged in");
 		} else if (Role == "Admin" && adminId) {
 			const Products = JSON.parse(JSON.stringify(args.Product));
+
+			const isPurchaseDeleted = await prisma.purchase.findUnique({
+				where: {
+					id: args.id
+				}
+			})
+
+			if (isPurchaseDeleted.isDeleted) {
+				throw new Error("Purchase Not Found");
+			}
 			// Create Purchase
 			const Purchase = await prisma.purchase.update({
 				where: {
@@ -304,28 +314,40 @@ async function DeletePurchase(parent, args, context, info) {
 				.Product();
 			const OBJ = { GetProduct: await GetProduct }
 
-			await prisma.purchaseOfProduct.deleteMany({
+			await prisma.purchaseOfProduct.updateMany({
 				where: {
 					PurchaseId: args.id
+				},
+				data: {
+					isDeleted: true,
 				}
 			});
 
-			await prisma.returnPurchase.deleteMany({
+			await prisma.returnPurchase.updateMany({
 				where: {
-					PurchaseId: args.id
+					PurchaseId: args.id,
+					data: {
+						isDeleted: true,
+					}
 				}
 			});
 
-			await prisma.purchase.delete({
+			await prisma.purchase.update({
 				where: {
-					id: args.id
+					id: args.id,
+					data: {
+						isDeleted: true,
+					}
 				}
 			});
 
-			await prisma.payment.deleteMany({
+			await prisma.payment.updateMany({
 				where: {
 					BillNo: Purchase.id,
 					PurchaseId: Purchase.id
+				},
+				data: {
+					isDeleted: true,
 				}
 			})
 
@@ -367,6 +389,16 @@ async function ReturnPurchase(parent, args, context, info) {
 					id: args.id
 				}
 			});
+
+			const isPurchaseDeleted = await prisma.purchase.findUnique({
+				where: {
+					id: args.id
+				}
+			})
+
+			if (isPurchaseDeleted.isDeleted) {
+				throw new Error("Purchase Not Found");
+			}
 			// Create Purchase
 			const Purchase = await prisma.purchase.update({
 				where: {

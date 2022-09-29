@@ -4,13 +4,14 @@ async function SerialNo(parent, args, context, info) {
   return await prisma.serialNo.findMany({
     where: {
       adminId: adminId,
+      isDeleted: false,
     }
   });
 }
 
 async function SerialNoInfo(parent, args, context, info) {
   const { prisma } = context;
-  const SerialNo =await prisma.serialNo.findUnique({
+  const SerialNo = await prisma.serialNo.findUnique({
     where: {
       SerialNo: args.SerialNo
     }

@@ -48,7 +48,7 @@ async function createAdmin(parent, args, context, info) {
 				password
 			}
 		});
-		
+
 		await prisma.admin.create({
 			data: {
 				...args,
@@ -85,7 +85,7 @@ async function loginAdmin(parent, args, context, info) {
 		const prismaAdminDB = new PrismaClient({ datasources: { db: { url: `${process.env.DATABASE_URL}/${DBName}?retryWrites=true&w=majority` } } })
 
 		const admin = await prismaAdminDB.admin.findUnique({ where: { email: args.email } });
-		if (!admin) {
+		if (!admin && admin.isDeleted) {
 			throw new Error("No such admin found");
 		}
 
@@ -123,6 +123,11 @@ async function updateAdmin(parent, args, context, info) {
 		const Data = { ...args }
 		delete Data.profilePicture
 
+		const admin = await prisma.admin.findUnique({ where: { email: adminId } });
+		if (!admin && admin.isDeleted) {
+			throw new Error("No such admin found");
+		}
+
 		await prisma.admin.update({
 			where: {
 				id: userId
@@ -154,11 +159,18 @@ async function deleteAdmin(parent, args, context, info) {
 		if (!userId && Role != "Super Admin") {
 			throw new Error("You must be Logged in as Super Admin");
 		} else if (userId && Role == "Super Admin") {
-			await prisma.admin.delete({
+			const admin = await prisma.admin.update({
 				where: {
 					id: args.id
+				},
+				data: {
+					isDeleted: true
 				}
 			});
+			if (!admin && admin.isDeleted) {
+				throw new Error("No such admin found");
+			}
+
 			return {
 				success: true,
 				message: "Admin Deleted Successfully ..."
@@ -186,6 +198,10 @@ async function changePasswordAdmin(parent, args, context, info) {
 					id: userId
 				}
 			});
+
+			if (!admin && admin.isDeleted) {
+				throw new Error("No such admin found");
+			}
 
 			const valid = await bcrypt.compare(args.oldPassword, admin.password);
 			if (!valid) {

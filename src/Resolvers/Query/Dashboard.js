@@ -10,7 +10,8 @@ async function Calculation(parent, args, context, info) {
 		},
 		...(Role !== "Admin" && {
 			userId: userId
-		})
+		}),
+		isDeleted: false,
 	};
 
 

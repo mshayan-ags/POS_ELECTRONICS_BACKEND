@@ -37,6 +37,17 @@ async function UpdateVendor(parent, args, context, info) {
 			throw new Error("You must be Logged in");
 		}
 		else if (adminId && Role == "Admin") {
+
+			const isVendorDeleted = await prisma.vendor.findUnique({
+				where: {
+					id: args.id
+				}
+			})
+
+			if (isVendorDeleted.isDeleted) {
+				throw new Error("Vendor Not Found");
+			}
+
 			
 			const Data = { ...args }
 			delete Data.id
@@ -73,8 +84,11 @@ async function DeleteVendor(parent, args, context, info) {
 		throw new Error("You must be Logged in");
 	} else if (adminId && Role == "Admin") {
 		try {
-			const DeleteVendorData = await prisma.vendor.delete({
-				where: { id: args.id }
+			const DeleteVendorData = await prisma.vendor.update({
+				where: { id: args.id },
+				data: {
+					isDeleted: true,
+				}
 			});
 
 			if (!DeleteVendorData) {

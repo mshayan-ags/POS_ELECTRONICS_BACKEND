@@ -3,18 +3,27 @@ async function Expense(parent, args, context, info) {
 
 	return prisma.expense.findMany({
 		where: {
-			adminId: adminId, ...(Role == "User" && {
+			adminId: adminId,
+			...(Role == "User" && {
 				userId: userId
-			}), } });
+			}),
+			isDeleted: false,
+		}
+	});
 }
 
 function ExpenseInfo(parent, args, context, info) {
 	const { prisma } = context;
-	return prisma.expense.findUnique({
+	const Data = prisma.expense.findUnique({
 		where: {
 			id: args.id
 		}
 	});
+	if (!Data?.isDeleted) {
+		return Data;
+	} else {
+		throw new Error("No Such Record Found");
+	}
 }
 
 module.exports = {

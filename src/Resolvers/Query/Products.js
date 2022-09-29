@@ -2,7 +2,11 @@ const { QuantityTotal } = require("../../utils/Calculate");
 
 async function Products(parent, args, context, info) {
 	const { adminId, prisma } = context;
-	const AllProducts = await prisma.products.findMany({ where: { adminId: adminId } });
+	const AllProducts = await prisma.products.findMany({
+		where: {
+			adminId: adminId, isDeleted: false,
+		}
+	});
 	QuantityTotal(AllProducts, "id", prisma)
 	return AllProducts
 }
@@ -14,24 +18,16 @@ async function ProductInfo(parent, args, context, info) {
 			id: args.id
 		}
 	});
-	QuantityTotal(Product, "id", prisma)
-	return Product
+	if (!Product?.isDeleted) {
+		QuantityTotal(Product, "id", prisma)
+		return Product
+	} else {
+		throw new Error("No Such Record Found");
+	}
 }
 
-
-function ProductSerialNoInfo(parent, args, context, info) {
-	const { prisma } = context;
-	return prisma.products.findUnique({
-		where: {
-			serialNo: {
-				contains: args.serialNo,
-			}
-		}
-	});
-}
 
 module.exports = {
 	Products,
 	ProductInfo,
-	ProductSerialNoInfo
 };

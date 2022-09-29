@@ -50,14 +50,14 @@ async function CreateExpense(parent, args, context, info) {
 async function UpdateExpense(parent, args, context, info) {
 	try {
 		const { adminId, Role, prisma } = context;
-		if (!adminId && Role!== "Admin") {
+		if (!adminId && Role !== "Admin") {
 			throw new Error("You must be Logged in");
 		} else if (adminId && Role == "Admin") {
 
 			const Data = { ...args }
 			delete Data.id
 
-			await prisma.expense.update({
+			const Expense = await prisma.expense.update({
 				where: {
 					id: args.id
 				},
@@ -65,7 +65,9 @@ async function UpdateExpense(parent, args, context, info) {
 					...Data
 				}
 			});
-
+			if (!Expense || Expense.isDeleted) {
+				throw new Error("No such Expense found");
+			}
 			return {
 				success: true,
 				message: "Expense Updated successfully..."
@@ -91,12 +93,16 @@ async function DeleteExpense(parent, args, context, info) {
 		if (!adminId && Role !== "Admin") {
 			throw new Error("You must be Logged in");
 		} else if (adminId && Role == "Admin") {
-			await prisma.expense.delete({
+			const Expense = await prisma.expense.update({
 				where: {
 					id: args.id
-				}
+				},
+				data: { isDeleted: true }
 			});
 
+			if (!Expense) {
+				throw new Error("No such Expense found");
+			}
 			return {
 				success: true,
 				message: "Expense Deleted successfully..."

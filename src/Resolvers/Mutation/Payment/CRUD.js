@@ -78,7 +78,7 @@ async function UpdatePayment(parent, args, context, info) {
 		if (!adminId && Role !== "Admin") {
 			throw new Error("You must be Logged in");
 		} else if (adminId && Role == "Admin") {
-			await prisma.payment.update({
+			const Payment = await prisma.payment.update({
 				where: {
 					id: args.id
 				},
@@ -88,6 +88,10 @@ async function UpdatePayment(parent, args, context, info) {
 					type: args.type
 				}
 			});
+
+			if (!Payment || Payment.isDeleted) {
+				throw new Error("No such Payment found");
+			}
 
 			return {
 				success: true,
@@ -114,12 +118,15 @@ async function DeletePayment(parent, args, context, info) {
 		if (!adminId && Role !== "Admin") {
 			throw new Error("You must be Logged in");
 		} else if (adminId && Role == "Admin") {
-			await prisma.payment.delete({
+			const Payment = await prisma.payment.update({
 				where: {
 					id: args.id
-				}
+				},
+				data: { isDeleted: true }
 			});
-
+			if (!Payment) {
+				throw new Error("No such Payment found");
+			}
 			return {
 				success: true,
 				message: "Payment Deleted successfully..."

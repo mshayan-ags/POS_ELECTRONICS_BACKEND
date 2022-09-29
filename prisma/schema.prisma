@@ -44,6 +44,7 @@ model Admin {
   SaleReturn         SaleReturn[]
   Accounts           Accounts[]
   SerialNo           SerialNo[]
+  isDeleted          Boolean             @default(false)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 }
@@ -88,6 +89,7 @@ model Customer {
   Admin          Admin     @relation(fields: [adminId], references: [id])
   adminId        String
   Payment        Payment[]
+  isDeleted      Boolean   @default(false)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -103,6 +105,7 @@ model Vendor {
   Admin          Admin      @relation(fields: [adminId], references: [id])
   adminId        String
   Payment        Payment[]
+  isDeleted      Boolean    @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 }
@@ -131,6 +134,8 @@ model Products {
   SaleReturn        SaleReturn[]
   // 
   SerialNo          SerialNo[]
+  // 
+  isDeleted         Boolean             @default(false)
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
 }
@@ -152,6 +157,8 @@ model SerialNo {
   Admin               Admin              @relation(fields: [adminId], references: [id])
   adminId             String
   // 
+  isDeleted           Boolean            @default(false)
+  // 
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
 }
@@ -169,6 +176,8 @@ model Sale {
   User       User?           @relation(fields: [userId], references: [id])
   userId     String?
   SaleReturn SaleReturn[]
+  // 
+  isDeleted  Boolean         @default(false)
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 }
@@ -189,6 +198,7 @@ model SaleOfProduct {
   Admin            Admin      @relation(fields: [adminId], references: [id])
   adminId          String
 
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -208,6 +218,7 @@ model SaleReturn {
   Admin            Admin    @relation(fields: [adminId], references: [id])
   adminId          String
 
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -226,8 +237,10 @@ model Purchase {
   adminId        String
   User           User?               @relation(fields: [userId], references: [id])
   userId         String?
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PurchaseOfProduct {
@@ -245,8 +258,10 @@ model PurchaseOfProduct {
   userId               String?
   Admin                Admin      @relation(fields: [adminId], references: [id])
   adminId              String
-  createdAt            DateTime   @default(now())
-  updatedAt            DateTime   @updatedAt
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ReturnPurchase {
@@ -263,8 +278,10 @@ model ReturnPurchase {
   userId               String?
   Admin                Admin    @relation(fields: [adminId], references: [id])
   adminId              String
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Payment {
@@ -284,21 +301,25 @@ model Payment {
   adminId         String
   User            User?     @relation(fields: [userId], references: [id])
   userId          String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Expense {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   Amount      Int
   Category    String
   Description String
-  User        User?    @relation(fields: [userId], references: [id])
+  User        User?   @relation(fields: [userId], references: [id])
   userId      String?
-  Admin       Admin    @relation(fields: [adminId], references: [id])
+  Admin       Admin   @relation(fields: [adminId], references: [id])
   adminId     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Attachment {
@@ -311,18 +332,22 @@ model Attachment {
   User       User?
   Admin      Admin?    @relation(fields: [adminId], references: [id])
   adminId    String?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Accounts {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String  @id @default(auto()) @map("_id") @db.ObjectId
   OpeningBalance Int?
   ClosingBalance Int?
-  User           User?    @relation(fields: [userId], references: [id])
+  User           User?   @relation(fields: [userId], references: [id])
   userId         String?
-  Admin          Admin    @relation(fields: [adminId], references: [id])
+  Admin          Admin   @relation(fields: [adminId], references: [id])
   adminId        String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

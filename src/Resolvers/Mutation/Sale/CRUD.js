@@ -158,6 +158,17 @@ async function UpdateSale(parent, args, context, info) {
 			throw new Error("You must be Logged in");
 		} else if (Role == "Admin" && adminId) {
 			const Products = JSON.parse(JSON.stringify(args.Product));
+
+			const isSaleDeleted = await prisma.sale.findUnique({
+				where: {
+					id: args.id
+				}
+			})
+
+			if (isSaleDeleted.isDeleted) {
+				throw new Error("Sale Not Found");
+			}
+
 			// Create Sale
 			const Sale = await prisma.sale.update({
 				where: {
@@ -299,25 +310,37 @@ async function DeleteSale(parent, args, context, info) {
 
 			const OBJ = { GetProduct: await GetProduct, GetCustomer: await GetCustomer }
 
-			await prisma.saleOfProduct.deleteMany({
+			await prisma.saleOfProduct.updateMany({
 				where: {
 					SaleId: args.id
+				},
+				data: {
+					isDeleted: true,
 				}
 			});
 
-			await prisma.saleReturn.deleteMany({
+			await prisma.saleReturn.updateMany({
 				where: {
 					SaleId: args.id
+				},
+				data: {
+					isDeleted: true,
 				}
 			});
-			await prisma.sale.delete({
+			await prisma.sale.update({
 				where: {
 					id: args.id
+				},
+				data: {
+					isDeleted: true,
 				}
 			});
-			await prisma.payment.deleteMany({
+			await prisma.payment.updateMany({
 				where: {
 					BillNo: args.id
+				},
+				data: {
+					isDeleted: true,
 				}
 			})
 
@@ -362,6 +385,11 @@ async function ReturnSale(parent, args, context, info) {
 					id: args.id
 				}
 			});
+
+			if (GetSale.isDeleted) {
+				throw new Error("Sale Not Found");
+			}
+
 			// Create Sale
 			const Sale = await prisma.sale.update({
 				where: {
