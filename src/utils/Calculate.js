@@ -31,14 +31,16 @@ async function QuantityTotal(Products, identifier, prisma) {
 		ProductReturnPurchase.map((a) => (ReturnPurchaseQuantity += a.Quantity));
 
 		const ProductSalesReturn = await prisma.saleReturn.findMany({
-			where: { ProductId: ProductId, isDeleted: false, }
+			where: { ProductId: ProductId }
 		});
 		ProductSalesReturn.map((a) => (SaleReturnQuantity += a.TotalQuantity));
 
 		let CurrQuantityAvailable = Number(Number(PurchaseQuantity) - Number(ReturnPurchaseQuantity)) - Number(Number(SaleQuantity) - Number(SaleReturnQuantity));
 
-		ExtractProduct.QuantityAvailable = CurrQuantityAvailable
-		AllProducts.push(ExtractProduct);
+		if (CurrQuantityAvailable !== ExtractProduct.QuantityAvailable) {
+			ExtractProduct.QuantityAvailable = CurrQuantityAvailable
+			AllProducts.push(ExtractProduct);
+		}
 	}
 
 	for (let index = 0; index < AllProducts.length; index++) {
